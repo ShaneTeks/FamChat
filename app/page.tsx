@@ -81,6 +81,16 @@ export default function Home() {
     setChats(prevChats => prevChats.map((chat) => (chat.id === chatId ? { ...chat, ...updates, updatedAt: Date.now() } : chat)))
   }
 
+  const toggleFavorite = (chatId: string) => {
+    setChats(prevChats => 
+      prevChats.map((chat) => 
+        chat.id === chatId 
+          ? { ...chat, isFavorite: !chat.isFavorite, updatedAt: Date.now() }
+          : chat
+      )
+    )
+  }
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
   }
@@ -101,6 +111,7 @@ export default function Home() {
         onSelectChat={setCurrentChatId}
         onNewChat={createNewChat}
         onDeleteChat={deleteChat}
+        onToggleFavorite={toggleFavorite}
         isOpen={sidebarOpen}
         onToggle={toggleSidebar}
         isMobile={isMobile}

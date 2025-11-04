@@ -19,7 +19,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
         className={cn(
           "px-4 py-3 sm:px-5 sm:py-4 rounded-2xl max-w-[95%]",
           isUser
-            ? "bg-(--color-user-message) text-white"
+            ? "bg-(--color-user-message) text-(--color-text-primary)"
             : "bg-(--color-ai-message) text-(--color-text-primary) border border-(--color-border)",
         )}
       >

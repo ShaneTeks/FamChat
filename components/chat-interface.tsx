@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import type { Chat, Message } from "@/lib/types"
 import { ChatMessage } from "@/components/chat-message"
 import { ChatInput } from "@/components/chat-input"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Menu, Sparkles } from "lucide-react"
 import { generateId } from "@/lib/utils"
 
@@ -288,6 +289,7 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
           <Sparkles className="w-5 h-5 text-(--color-accent) shrink-0" />
           <h1 className="text-lg font-semibold text-(--color-text-primary) truncate">{chat.title}</h1>
         </div>
+        <ThemeToggle />
       </header>
 
       {/* Messages */}

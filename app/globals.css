@@ -44,10 +44,10 @@
   --color-text-tertiary: oklch(0.708 0 0);
   
   /* Message bubble colors */
-  --color-user-message: oklch(0.205 0 0);
-  --color-ai-message: oklch(0.985 0 0);
-  --color-surface: oklch(1 0 0);
-  --color-surface-hover: oklch(0.97 0 0);
+  --color-user-message: var(--secondary);
+  --color-ai-message: var(--card);
+  --color-surface: var(--background);
+  --color-surface-hover: var(--muted);
 }
 
 .dark {
@@ -90,10 +90,10 @@
   --color-text-tertiary: oklch(0.556 0 0);
   
   /* Message bubble colors */
-  --color-user-message: oklch(0.488 0.243 264.376);
-  --color-ai-message: oklch(0.205 0 0);
-  --color-surface: oklch(0.145 0 0);
-  --color-surface-hover: oklch(0.269 0 0);
+  --color-user-message: var(--secondary);
+  --color-ai-message: var(--card);
+  --color-surface: var(--background);
+  --color-surface-hover: var(--muted);
 }
 
 @theme inline {
