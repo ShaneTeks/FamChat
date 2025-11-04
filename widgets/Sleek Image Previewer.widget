@@ -1,0 +1,138 @@
+{
+  "version": "1.0",
+  "name": "Sleek Image Previewer",
+  "template": "{\"type\":\"Card\",\"size\":\"md\",\"background\":{{ (glass) | tojson }},\"children\":[{\"type\":\"Col\",\"gap\":3,\"children\":[{\"type\":\"Image\",\"src\":{{ (image.src) | tojson }},\"alt\":{{ (image.alt) | tojson }},\"aspectRatio\":{{ ((16 / 9)) | tojson }},\"radius\":\"xl\",\"frame\":true,\"flush\":true,\"children\":[]},{\"type\":\"Row\",\"align\":\"center\",\"gap\":3,\"children\":[{\"type\":\"Col\",\"gap\":0,\"flex\":\"auto\",\"children\":[{\"type\":\"Text\",\"value\":{{ (fileName) | tojson }},\"size\":\"sm\",\"weight\":\"semibold\",\"maxLines\":1,\"children\":[]},{\"type\":\"Caption\",\"value\":{{ (meta) | tojson }},\"color\":\"secondary\",\"children\":[]}]},{\"type\":\"Row\",\"gap\":2,\"children\":[{\"type\":\"Button\",\"label\":\"Download\",\"style\":\"primary\",\"onClickAction\":{\"type\":\"file.download\",\"payload\":{\"url\":{{ (image.src) | tojson }},\"name\":{{ (fileName) | tojson }}}},\"children\":[]},{\"type\":\"Button\",\"label\":\"Share\",\"variant\":\"outline\",\"onClickAction\":{\"type\":\"file.share\",\"payload\":{\"url\":{{ (image.src) | tojson }},\"name\":{{ (fileName) | tojson }}}},\"children\":[]}]}]}]}]}",
+  "jsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "image": {
+        "type": "object",
+        "properties": {
+          "src": {
+            "type": "string"
+          },
+          "alt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "src",
+          "alt"
+        ],
+        "additionalProperties": false
+      },
+      "fileName": {
+        "type": "string"
+      },
+      "meta": {
+        "type": "string"
+      },
+      "glass": {
+        "type": "object",
+        "properties": {
+          "light": {
+            "type": "string"
+          },
+          "dark": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "light",
+          "dark"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "required": [
+      "image",
+      "fileName",
+      "meta",
+      "glass"
+    ],
+    "additionalProperties": false
+  },
+  "outputJsonPreview": {
+    "type": "Card",
+    "size": "md",
+    "background": {
+      "light": "rgba(255,255,255,0.55)",
+      "dark": "rgba(20,20,20,0.45)"
+    },
+    "children": [
+      {
+        "type": "Col",
+        "gap": 3,
+        "children": [
+          {
+            "type": "Image",
+            "src": "https://upload.wikimedia.org/wikipedia/commons/4/48/Gradient_Abstract_Background.jpg",
+            "alt": "Gradient abstract background",
+            "aspectRatio": 1.7777777777777777,
+            "radius": "xl",
+            "frame": true,
+            "flush": true
+          },
+          {
+            "type": "Row",
+            "align": "center",
+            "gap": 3,
+            "children": [
+              {
+                "type": "Col",
+                "gap": 0,
+                "flex": "auto",
+                "children": [
+                  {
+                    "type": "Text",
+                    "value": "Gradient_Abstract_Background.jpg",
+                    "size": "sm",
+                    "weight": "semibold",
+                    "maxLines": 1
+                  },
+                  {
+                    "type": "Caption",
+                    "value": "JPEG • 4680×3000 • CC0",
+                    "color": "secondary"
+                  }
+                ]
+              },
+              {
+                "type": "Row",
+                "gap": 2,
+                "children": [
+                  {
+                    "type": "Button",
+                    "label": "Download",
+                    "style": "primary",
+                    "onClickAction": {
+                      "type": "file.download",
+                      "payload": {
+                        "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/Gradient_Abstract_Background.jpg",
+                        "name": "Gradient_Abstract_Background.jpg"
+                      }
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "label": "Share",
+                    "variant": "outline",
+                    "onClickAction": {
+                      "type": "file.share",
+                      "payload": {
+                        "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/Gradient_Abstract_Background.jpg",
+                        "name": "Gradient_Abstract_Background.jpg"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "encodedWidget": "eyJpZCI6Ijg3NGZiMTBkLTM0ZGItNDM3Zi04NzMxLTAxNDBjMTcxNDNjOCIsIm5hbWUiOiJTbGVlayBJbWFnZSBQcmV2aWV3ZXIiLCJ2aWV3IjoiPENhcmQgc2l6ZT1cIm1kXCIgYmFja2dyb3VuZD17Z2xhc3N9PlxuICA8Q29sIGdhcD17M30-XG4gICAgPEltYWdlXG4gICAgICBzcmM9e2ltYWdlLnNyY31cbiAgICAgIGFsdD17aW1hZ2UuYWx0fVxuICAgICAgYXNwZWN0UmF0aW89ezE2IC8gOX1cbiAgICAgIHJhZGl1cz1cInhsXCJcbiAgICAgIGZyYW1lXG4gICAgICBmbHVzaFxuICAgIC8-XG4gICAgPFJvdyBhbGlnbj1cImNlbnRlclwiIGdhcD17M30-XG4gICAgICA8Q29sIGdhcD17MH0gZmxleD1cImF1dG9cIj5cbiAgICAgICAgPFRleHQgdmFsdWU9e2ZpbGVOYW1lfSBzaXplPVwic21cIiB3ZWlnaHQ9XCJzZW1pYm9sZFwiIG1heExpbmVzPXsxfSAvPlxuICAgICAgICA8Q2FwdGlvbiB2YWx1ZT17bWV0YX0gY29sb3I9XCJzZWNvbmRhcnlcIiAvPlxuICAgICAgPC9Db2w-XG4gICAgICA8Um93IGdhcD17Mn0-XG4gICAgICAgIDxCdXR0b25cbiAgICAgICAgICBsYWJlbD1cIkRvd25sb2FkXCJcbiAgICAgICAgICBzdHlsZT1cInByaW1hcnlcIlxuICAgICAgICAgIG9uQ2xpY2tBY3Rpb249e3tcbiAgICAgICAgICAgIHR5cGU6IFwiZmlsZS5kb3dubG9hZFwiLFxuICAgICAgICAgICAgcGF5bG9hZDogeyB1cmw6IGltYWdlLnNyYywgbmFtZTogZmlsZU5hbWUgfSxcbiAgICAgICAgICB9fVxuICAgICAgICAvPlxuICAgICAgICA8QnV0dG9uXG4gICAgICAgICAgbGFiZWw9XCJTaGFyZVwiXG4gICAgICAgICAgdmFyaWFudD1cIm91dGxpbmVcIlxuICAgICAgICAgIG9uQ2xpY2tBY3Rpb249e3tcbiAgICAgICAgICAgIHR5cGU6IFwiZmlsZS5zaGFyZVwiLFxuICAgICAgICAgICAgcGF5bG9hZDogeyB1cmw6IGltYWdlLnNyYywgbmFtZTogZmlsZU5hbWUgfSxcbiAgICAgICAgICB9fVxuICAgICAgICAvPlxuICAgICAgPC9Sb3c-XG4gICAgPC9Sb3c-XG4gIDwvQ29sPlxuPC9DYXJkPiIsImRlZmF1bHRTdGF0ZSI6eyJpbWFnZSI6eyJzcmMiOiJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zLzQvNDgvR3JhZGllbnRfQWJzdHJhY3RfQmFja2dyb3VuZC5qcGciLCJhbHQiOiJHcmFkaWVudCBhYnN0cmFjdCBiYWNrZ3JvdW5kIn0sImZpbGVOYW1lIjoiR3JhZGllbnRfQWJzdHJhY3RfQmFja2dyb3VuZC5qcGciLCJtZXRhIjoiSlBFRyDigKIgNDY4MMOXMzAwMCDigKIgQ0MwIiwiZ2xhc3MiOnsibGlnaHQiOiJyZ2JhKDI1NSwyNTUsMjU1LDAuNTUpIiwiZGFyayI6InJnYmEoMjAsMjAsMjAsMC40NSkifX0sInN0YXRlcyI6W10sInNjaGVtYSI6ImltcG9ydCB7IHogfSBmcm9tIFwiem9kXCJcblxuY29uc3QgVGhlbWVDb2xvciA9IHouc3RyaWN0T2JqZWN0KHtcbiAgbGlnaHQ6IHouc3RyaW5nKCksXG4gIGRhcms6IHouc3RyaW5nKCksXG59KVxuXG5jb25zdCBXaWRnZXRTdGF0ZSA9IHouc3RyaWN0T2JqZWN0KHtcbiAgaW1hZ2U6IHouc3RyaWN0T2JqZWN0KHsgc3JjOiB6LnN0cmluZygpLCBhbHQ6IHouc3RyaW5nKCkgfSksXG4gIGZpbGVOYW1lOiB6LnN0cmluZygpLFxuICBtZXRhOiB6LnN0cmluZygpLFxuICBnbGFzczogVGhlbWVDb2xvcixcbn0pXG5cbmV4cG9ydCBkZWZhdWx0IFdpZGdldFN0YXRlIiwic2NoZW1hVmFsaWRpdHkiOiJ2YWxpZCIsInZpZXdWYWxpZGl0eSI6InZhbGlkIiwiZGVmYXVsdFN0YXRlVmFsaWRpdHkiOiJ2YWxpZCJ9"
+}
