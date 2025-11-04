@@ -6,6 +6,7 @@ export interface Message {
   imageUrl?: string
   imageWidth?: number
   imageHeight?: number
+  isGeneratingImage?: boolean
 }
 
 export interface Chat {

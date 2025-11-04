@@ -153,6 +153,8 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
         content: "",
         timestamp: Date.now(),
       }
+      
+      let isImageRequest = false
 
       if (reader) {
         while (true) {
@@ -177,10 +179,29 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                 console.log("Parsed 0: format:", data)
                 if (data.type === "text-delta" && data.textDelta) {
                   aiContent += data.textDelta
-                  aiMessage.content = aiContent
-                  onUpdateChat(chat.id, {
-                    messages: [...updatedMessages, aiMessage],
-                  })
+                  
+                  // Check if this looks like an image request JSON
+                  const trimmed = aiContent.trim()
+                  if (trimmed.startsWith("{")) {
+                    try {
+                      // Try to parse as JSON to detect image requests early
+                      if (trimmed.includes('"type"') && trimmed.includes('"image"')) {
+                        isImageRequest = true
+                        // Don't update the message content yet
+                        continue
+                      }
+                    } catch {
+                      // Not valid JSON yet, continue normally
+                    }
+                  }
+                  
+                  // Only update if not an image request
+                  if (!isImageRequest) {
+                    aiMessage.content = aiContent
+                    onUpdateChat(chat.id, {
+                      messages: [...updatedMessages, aiMessage],
+                    })
+                  }
                 }
               } catch (e) {
                 console.error("Failed to parse line:", line, e)
@@ -202,18 +223,56 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                 // Handle text-delta format (Groq/Vercel AI SDK format)
                 if (data.type === "text-delta" && data.delta) {
                   aiContent += data.delta
-                  aiMessage.content = aiContent
-                  onUpdateChat(chat.id, {
-                    messages: [...updatedMessages, aiMessage],
-                  })
+                  
+                  // Check if this looks like an image request JSON
+                  const trimmed = aiContent.trim()
+                  if (trimmed.startsWith("{")) {
+                    try {
+                      // Try to parse as JSON to detect image requests early
+                      if (trimmed.includes('"type"') && trimmed.includes('"image"')) {
+                        isImageRequest = true
+                        // Don't update the message content yet
+                        continue
+                      }
+                    } catch {
+                      // Not valid JSON yet, continue normally
+                    }
+                  }
+                  
+                  // Only update if not an image request
+                  if (!isImageRequest) {
+                    aiMessage.content = aiContent
+                    onUpdateChat(chat.id, {
+                      messages: [...updatedMessages, aiMessage],
+                    })
+                  }
                 }
                 // Handle OpenAI format
                 else if (data.choices?.[0]?.delta?.content) {
                   aiContent += data.choices[0].delta.content
-                  aiMessage.content = aiContent
-                  onUpdateChat(chat.id, {
-                    messages: [...updatedMessages, aiMessage],
-                  })
+                  
+                  // Check if this looks like an image request JSON
+                  const trimmed = aiContent.trim()
+                  if (trimmed.startsWith("{")) {
+                    try {
+                      // Try to parse as JSON to detect image requests early
+                      if (trimmed.includes('"type"') && trimmed.includes('"image"')) {
+                        isImageRequest = true
+                        // Don't update the message content yet
+                        continue
+                      }
+                    } catch {
+                      // Not valid JSON yet, continue normally
+                    }
+                  }
+                  
+                  // Only update if not an image request
+                  if (!isImageRequest) {
+                    aiMessage.content = aiContent
+                    onUpdateChat(chat.id, {
+                      messages: [...updatedMessages, aiMessage],
+                    })
+                  }
                 }
               } catch (e) {
                 console.error("Failed to parse SSE line:", line, e)
@@ -232,6 +291,13 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
           if (jsonResponse.type === "image" && jsonResponse.prompt) {
             console.log("Detected image generation request:", jsonResponse.prompt)
             
+            // Update message to show loading state
+            aiMessage.content = jsonResponse.message || "Here's your generated image:"
+            aiMessage.isGeneratingImage = true
+            onUpdateChat(chat.id, {
+              messages: [...updatedMessages, aiMessage],
+            })
+            
             // Generate the image
             const imageResponse = await fetch("/api/generate-image", {
               method: "POST",
@@ -243,11 +309,18 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
               const imageData = await imageResponse.json()
               
               // Update the message with the generated image
-              aiMessage.content = jsonResponse.message || "Here's your generated image:"
               aiMessage.imageUrl = imageData.imageUrl
               aiMessage.imageWidth = imageData.width
               aiMessage.imageHeight = imageData.height
+              aiMessage.isGeneratingImage = false
               
+              onUpdateChat(chat.id, {
+                messages: [...updatedMessages, aiMessage],
+              })
+            } else {
+              // Remove loading state if image generation failed
+              aiMessage.isGeneratingImage = false
+              aiMessage.content = "Sorry, I couldn't generate the image. Please try again."
               onUpdateChat(chat.id, {
                 messages: [...updatedMessages, aiMessage],
               })

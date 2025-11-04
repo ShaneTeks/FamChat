@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { ImagePreviewCard } from "@/components/image-preview-card"
+import { ImageLoading } from "@/components/image-loading"
 
 interface ChatMessageProps {
   message: Message
@@ -41,6 +42,11 @@ export function ChatMessage({ message }: ChatMessageProps) {
                   width={message.imageWidth}
                   height={message.imageHeight}
                 />
+              </div>
+            )}
+            {message.isGeneratingImage && (
+              <div className="mt-4">
+                <ImageLoading />
               </div>
             )}
           </>
