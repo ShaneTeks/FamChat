@@ -45,7 +45,54 @@ export function ChatMessage({ message }: ChatMessageProps) {
                 size="sm"
                 onClick={async () => {
                   try {
-                    const cacheKey = `tts_${settings.ttsProvider}_${settings.ttsProvider === 'cartesia' ? settings.cartesiaMode : ''}_${btoa(message.content).slice(0, 50)}`;
+                    // Safe encoding for Unicode characters
+                    const safeEncode = (str: string) => {
+                      try {
+                        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) => {
+                          return String.fromCharCode(parseInt(p1, 16));
+                        }));
+                      } catch {
+                        // Fallback: use a hash of the content
+                        let hash = 0;
+                        for (let i = 0; i < str.length; i++) {
+                          const char = str.charCodeAt(i);
+                          hash = ((hash << 5) - hash) + char;
+                          hash = hash & hash;
+                        }
+                        return Math.abs(hash).toString(36);
+                      }
+                    };
+                    
+                    // Safe localStorage setter with quota management
+                    const safeSetItem = (key: string, value: string) => {
+                      try {
+                        localStorage.setItem(key, value);
+                      } catch (e) {
+                        if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+                          // Storage quota exceeded - clear old TTS cache
+                          console.warn('localStorage quota exceeded, clearing old TTS cache...');
+                          const keys = Object.keys(localStorage);
+                          const ttsKeys = keys.filter(k => k.startsWith('tts_')).sort();
+                          
+                          // Remove oldest 50% of TTS cache entries
+                          const keysToRemove = Math.ceil(ttsKeys.length / 2);
+                          for (let i = 0; i < keysToRemove; i++) {
+                            localStorage.removeItem(ttsKeys[i]);
+                          }
+                          
+                          // Try again
+                          try {
+                            localStorage.setItem(key, value);
+                          } catch (retryError) {
+                            console.warn('Still unable to cache TTS audio after cleanup');
+                          }
+                        } else {
+                          console.error('Failed to cache TTS audio:', e);
+                        }
+                      }
+                    };
+                    
+                    const cacheKey = `tts_${settings.ttsProvider}_${settings.ttsProvider === 'cartesia' ? settings.cartesiaMode : ''}_${safeEncode(message.content).slice(0, 50)}`;
                     const cachedAudioData = localStorage.getItem(cacheKey);
 
                     if (cachedAudioData) {
@@ -75,7 +122,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
                           binary += String.fromCharCode(bytes[i]);
                         }
                         const base64Audio = btoa(binary);
-                        localStorage.setItem(cacheKey, base64Audio); // Cache base64 data
+                        safeSetItem(cacheKey, base64Audio); // Cache base64 data
                         
                         const blob = new Blob([arrayBuffer], { type: 'audio/wav' });
                         const audio = new Audio(URL.createObjectURL(blob));
@@ -98,7 +145,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
                             binary += String.fromCharCode(bytes[i]);
                           }
                           const base64Audio = btoa(binary);
-                          localStorage.setItem(cacheKey, base64Audio); // Cache base64 data
+                          safeSetItem(cacheKey, base64Audio); // Cache base64 data
                           
                           const blob = new Blob([arrayBuffer], { type: 'audio/wav' });
                           const audio = new Audio(URL.createObjectURL(blob));
@@ -193,7 +240,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
                               binary += String.fromCharCode(wavBuffer[i]);
                             }
                             const base64Audio = btoa(binary);
-                            localStorage.setItem(cacheKey, base64Audio);
+                            safeSetItem(cacheKey, base64Audio);
                             
                             const blob = new Blob([wavBuffer], { type: 'audio/wav' });
                             const audio = new Audio(URL.createObjectURL(blob));
