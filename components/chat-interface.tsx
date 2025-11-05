@@ -5,6 +5,7 @@ import type { Chat, Message } from "@/lib/types"
 import { ChatMessage } from "@/components/chat-message"
 import { ChatInput } from "@/components/chat-input"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { SyncButton } from "@/components/sync-button"
 import { Menu, Sparkles } from "lucide-react"
 import { generateId } from "@/lib/utils"
 import { useSettings } from "@/contexts/settings-context"
@@ -15,9 +16,11 @@ interface ChatInterfaceProps {
   onToggleSidebar: () => void
   sidebarOpen: boolean
   isMobile?: boolean
+  onToggleSync?: () => void
+  isSyncing?: boolean
 }
 
-export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen, isMobile = false }: ChatInterfaceProps) {
+export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen, isMobile = false, onToggleSync, isSyncing }: ChatInterfaceProps) {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { settings } = useSettings()
@@ -365,6 +368,13 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
           <Sparkles className="w-5 h-5 text-(--color-accent) shrink-0" />
           <h1 className="text-lg font-semibold text-(--color-text-primary) truncate">{chat.title}</h1>
         </div>
+        {onToggleSync && (
+          <SyncButton
+            syncEnabled={chat.syncEnabled || false}
+            onToggle={onToggleSync}
+            isSyncing={isSyncing}
+          />
+        )}
         <ThemeToggle />
       </header>
 

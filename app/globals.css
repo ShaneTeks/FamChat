@@ -4,96 +4,103 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* Custom Raimond Colors */
+  /* Primary: #62F4F3 - Bright cyan */
+  /* Secondary: #06202B - Dark blue */
+  /* Tertiary: #077A7D - Teal */
+  /* Tertiary Secondary: #F5EEDD - Cream */
+  
+  --background: oklch(0.96 0.01 85); /* F5EEDD - Cream background */
+  --foreground: oklch(0.15 0.02 220); /* 06202B - Dark blue text */
+  --card: oklch(0.99 0.005 85); /* Lighter cream for cards */
+  --card-foreground: oklch(0.15 0.02 220);
+  --popover: oklch(0.99 0.005 85);
+  --popover-foreground: oklch(0.15 0.02 220);
+  --primary: oklch(0.88 0.12 195); /* 62F4F3 - Bright cyan */
+  --primary-foreground: oklch(0.15 0.02 220); /* Dark blue on primary */
+  --secondary: oklch(0.15 0.02 220); /* 06202B - Dark blue */
+  --secondary-foreground: oklch(0.96 0.01 85); /* Cream on secondary */
+  --muted: oklch(0.92 0.01 85); /* Muted cream */
+  --muted-foreground: oklch(0.35 0.03 200);
+  --accent: oklch(0.45 0.08 195); /* 077A7D - Teal */
+  --accent-foreground: oklch(0.99 0.005 85);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --destructive-foreground: oklch(0.99 0.005 85);
+  --border: oklch(0.85 0.015 85); /* Light border */
+  --input: oklch(0.92 0.01 85);
+  --ring: oklch(0.88 0.12 195); /* Primary cyan for focus rings */
+  --chart-1: oklch(0.88 0.12 195); /* Primary cyan */
+  --chart-2: oklch(0.45 0.08 195); /* Tertiary teal */
+  --chart-3: oklch(0.15 0.02 220); /* Secondary dark blue */
+  --chart-4: oklch(0.96 0.01 85); /* Tertiary secondary cream */
+  --chart-5: oklch(0.65 0.1 195); /* Mid cyan */
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.99 0.005 85); /* Light cream sidebar */
+  --sidebar-foreground: oklch(0.15 0.02 220);
+  --sidebar-primary: oklch(0.88 0.12 195); /* Primary cyan */
+  --sidebar-primary-foreground: oklch(0.15 0.02 220);
+  --sidebar-accent: oklch(0.45 0.08 195); /* Tertiary teal */
+  --sidebar-accent-foreground: oklch(0.99 0.005 85);
+  --sidebar-border: oklch(0.85 0.015 85);
+  --sidebar-ring: oklch(0.88 0.12 195);
   
   /* Custom text colors */
-  --color-text-primary: oklch(0.145 0 0);
-  --color-text-secondary: oklch(0.556 0 0);
-  --color-text-tertiary: oklch(0.708 0 0);
+  --color-text-primary: oklch(0.15 0.02 220); /* Dark blue */
+  --color-text-secondary: oklch(0.35 0.03 200); /* Medium blue-gray */
+  --color-text-tertiary: oklch(0.45 0.08 195); /* Teal */
   
   /* Message bubble colors */
-  --color-user-message: var(--secondary);
-  --color-ai-message: var(--card);
+  --color-user-message: oklch(0.88 0.12 195); /* Primary cyan for user */
+  --color-ai-message: oklch(0.99 0.005 85); /* Cream for AI */
   --color-surface: var(--background);
-  --color-surface-hover: var(--muted);
+  --color-surface-hover: oklch(0.92 0.01 85); /* Slightly darker cream on hover */
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  /* Dark mode with Raimond colors */
+  --background: oklch(0.15 0.02 220); /* 06202B - Dark blue background */
+  --foreground: oklch(0.96 0.01 85); /* F5EEDD - Cream text */
+  --card: oklch(0.20 0.025 220); /* Slightly lighter dark blue for cards */
+  --card-foreground: oklch(0.96 0.01 85);
+  --popover: oklch(0.20 0.025 220);
+  --popover-foreground: oklch(0.96 0.01 85);
+  --primary: oklch(0.88 0.12 195); /* 62F4F3 - Bright cyan */
+  --primary-foreground: oklch(0.15 0.02 220); /* Dark blue on primary */
+  --secondary: oklch(0.45 0.08 195); /* 077A7D - Teal */
+  --secondary-foreground: oklch(0.96 0.01 85);
+  --muted: oklch(0.25 0.03 220); /* Muted dark blue */
+  --muted-foreground: oklch(0.65 0.02 200);
+  --accent: oklch(0.45 0.08 195); /* 077A7D - Teal */
+  --accent-foreground: oklch(0.96 0.01 85);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.96 0.01 85);
+  --border: oklch(0.30 0.03 220); /* Subtle border */
+  --input: oklch(0.25 0.03 220);
+  --ring: oklch(0.88 0.12 195); /* Primary cyan for focus rings */
+  --chart-1: oklch(0.88 0.12 195); /* Primary cyan */
+  --chart-2: oklch(0.45 0.08 195); /* Tertiary teal */
+  --chart-3: oklch(0.96 0.01 85); /* Tertiary secondary cream */
+  --chart-4: oklch(0.65 0.1 195); /* Mid cyan */
+  --chart-5: oklch(0.35 0.06 195); /* Dark teal */
+  --sidebar: oklch(0.18 0.02 220); /* Dark blue sidebar */
+  --sidebar-foreground: oklch(0.96 0.01 85);
+  --sidebar-primary: oklch(0.88 0.12 195); /* Primary cyan */
+  --sidebar-primary-foreground: oklch(0.15 0.02 220);
+  --sidebar-accent: oklch(0.45 0.08 195); /* Tertiary teal */
+  --sidebar-accent-foreground: oklch(0.96 0.01 85);
+  --sidebar-border: oklch(0.30 0.03 220);
+  --sidebar-ring: oklch(0.88 0.12 195);
   
   /* Custom text colors */
-  --color-text-primary: oklch(0.985 0 0);
-  --color-text-secondary: oklch(0.708 0 0);
-  --color-text-tertiary: oklch(0.556 0 0);
+  --color-text-primary: oklch(0.96 0.01 85); /* Cream */
+  --color-text-secondary: oklch(0.65 0.02 200); /* Light blue-gray */
+  --color-text-tertiary: oklch(0.88 0.12 195); /* Bright cyan */
   
   /* Message bubble colors */
-  --color-user-message: var(--secondary);
-  --color-ai-message: var(--card);
+  --color-user-message: oklch(0.45 0.08 195); /* Teal for user */
+  --color-ai-message: oklch(0.20 0.025 220); /* Dark blue for AI */
   --color-surface: var(--background);
-  --color-surface-hover: var(--muted);
+  --color-surface-hover: oklch(0.25 0.03 220); /* Slightly lighter on hover */
 }
 
 @theme inline {

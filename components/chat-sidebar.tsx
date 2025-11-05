@@ -1,8 +1,9 @@
 "use client"
 
 import type { Chat } from "@/lib/types"
-import { MessageSquare, Plus, Trash2, X, Star, Settings } from "lucide-react"
+import { MessageSquare, Plus, Trash2, X, Star, Settings, LogOut, User as UserIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { User } from '@supabase/supabase-js'
 
 interface ChatSidebarProps {
   chats: Chat[]
@@ -15,9 +16,11 @@ interface ChatSidebarProps {
   onToggle: () => void
   isMobile?: boolean
   onOpenSettings?: () => void
+  user?: User | null
+  onSignOut?: () => void
 }
 
-export function ChatSidebar({ chats, currentChatId, onSelectChat, onNewChat, onDeleteChat, onToggleFavorite, isOpen, onToggle, isMobile = false, onOpenSettings }: ChatSidebarProps) {
+export function ChatSidebar({ chats, currentChatId, onSelectChat, onNewChat, onDeleteChat, onToggleFavorite, isOpen, onToggle, isMobile = false, onOpenSettings, user, onSignOut }: ChatSidebarProps) {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp)
     const now = new Date()
@@ -206,11 +209,33 @@ export function ChatSidebar({ chats, currentChatId, onSelectChat, onNewChat, onD
         )}
       </div>
 
-      <div className="p-4 border-t border-(--color-border)">
+      <div className="p-4 border-t border-(--color-border) space-y-3">
+        {/* User Status */}
+        {user && (
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-(--color-surface-hover)">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <UserIcon className="w-4 h-4 text-(--color-accent)" />
+                <p className="text-xs font-medium text-(--color-text-primary) truncate">
+                  {user.email}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onSignOut}
+              className="flex items-center justify-center p-1.5 rounded hover:bg-(--color-surface-hover) transition-colors"
+              aria-label="Sign out"
+            >
+              <LogOut className="w-4 h-4 text-(--color-text-secondary)" />
+            </button>
+          </div>
+        )}
+        
+        {/* Settings Row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-(--color-text-tertiary)">
             <div className="w-2 h-2 rounded-full bg-(--color-accent)" />
-            <span>Saved locally</span>
+            <span>{user ? 'Syncing enabled' : 'Saved locally'}</span>
           </div>
           {onOpenSettings && (
             <button

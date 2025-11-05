@@ -16,4 +16,6 @@ export interface Chat {
   createdAt: number
   updatedAt: number
   isFavorite?: boolean
+  syncEnabled?: boolean
+  lastSyncedAt?: number
 }
