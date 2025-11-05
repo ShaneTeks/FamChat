@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/hooks/use-theme'
+import { SettingsProvider } from '@/contexts/settings-context'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -25,7 +26,9 @@ export default function RootLayout({
           defaultTheme="system"
           storageKey="famchat-theme"
         >
-          {children}
+          <SettingsProvider>
+            {children}
+          </SettingsProvider>
         </ThemeProvider>
         <Analytics />
       </body>

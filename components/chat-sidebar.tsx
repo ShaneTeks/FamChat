@@ -1,7 +1,7 @@
 "use client"
 
 import type { Chat } from "@/lib/types"
-import { MessageSquare, Plus, Trash2, X, Star } from "lucide-react"
+import { MessageSquare, Plus, Trash2, X, Star, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface ChatSidebarProps {
@@ -14,9 +14,10 @@ interface ChatSidebarProps {
   isOpen: boolean
   onToggle: () => void
   isMobile?: boolean
+  onOpenSettings?: () => void
 }
 
-export function ChatSidebar({ chats, currentChatId, onSelectChat, onNewChat, onDeleteChat, onToggleFavorite, isOpen, onToggle, isMobile = false }: ChatSidebarProps) {
+export function ChatSidebar({ chats, currentChatId, onSelectChat, onNewChat, onDeleteChat, onToggleFavorite, isOpen, onToggle, isMobile = false, onOpenSettings }: ChatSidebarProps) {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp)
     const now = new Date()
@@ -206,9 +207,20 @@ export function ChatSidebar({ chats, currentChatId, onSelectChat, onNewChat, onD
       </div>
 
       <div className="p-4 border-t border-(--color-border)">
-        <div className="flex items-center gap-2 text-xs text-(--color-text-tertiary)">
-          <div className="w-2 h-2 rounded-full bg-(--color-accent)" />
-          <span>Saved locally</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-(--color-text-tertiary)">
+            <div className="w-2 h-2 rounded-full bg-(--color-accent)" />
+            <span>Saved locally</span>
+          </div>
+          {onOpenSettings && (
+            <button
+              onClick={onOpenSettings}
+              className="flex items-center justify-center p-2 rounded-lg hover:bg-(--color-surface-hover) transition-colors"
+              aria-label="Settings"
+            >
+              <Settings className="w-4 h-4 text-(--color-text-secondary)" />
+            </button>
+          )}
         </div>
       </div>
     </aside>
