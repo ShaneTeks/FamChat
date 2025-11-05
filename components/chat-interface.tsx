@@ -7,6 +7,7 @@ import { ChatInput } from "@/components/chat-input"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Menu, Sparkles } from "lucide-react"
 import { generateId } from "@/lib/utils"
+import { useSettings } from "@/contexts/settings-context"
 
 interface ChatInterfaceProps {
   chat: Chat
@@ -19,6 +20,7 @@ interface ChatInterfaceProps {
 export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen, isMobile = false }: ChatInterfaceProps) {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const { settings } = useSettings()
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -137,6 +139,7 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
             role: msg.role,
             content: msg.content,
           })),
+          systemInstruction: settings.systemInstruction,
         }),
       })
 

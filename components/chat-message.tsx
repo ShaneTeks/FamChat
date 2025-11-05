@@ -225,7 +225,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
                 size="sm"
                 onClick={async () => {
                   await navigator.clipboard.writeText(message.content);
-                  toast({ title: "text copied please" });
+                  toast({ title: "Copied to clipboard!" });
                 }}
                 className="h-8 w-8 p-0"
               >

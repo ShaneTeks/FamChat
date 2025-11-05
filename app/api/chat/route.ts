@@ -26,7 +26,10 @@ export async function POST(req: Request) {
     return new Response("Invalid request body", { status: 400 })
   }
 
-  const { messages } = body as { messages?: Array<{ role: string; content: string }> }
+  const { messages, systemInstruction } = body as { 
+    messages?: Array<{ role: string; content: string }>
+    systemInstruction?: string
+  }
 
   console.log("Extracted messages:", messages)
 
@@ -34,8 +37,13 @@ export async function POST(req: Request) {
     return new Response("No messages provided", { status: 400 })
   }
 
-  // Add system message to instruct the AI about image generation capability
-  const systemMessage = `You are a helpful AI assistant with the ability to generate images. When a user asks you to create, generate, or draw an image, respond with a JSON object in the following format:
+  // Use custom system instruction if provided, otherwise use default
+  const baseInstruction = systemInstruction || 'You are a helpful AI assistant.'
+  
+  // Add image generation capability to the system message
+  const systemMessage = `${baseInstruction}
+
+You also have the ability to generate images. When a user asks you to create, generate, or draw an image, respond with a JSON object in the following format:
 {
   "type": "image",
   "prompt": "detailed description of the image",
@@ -46,7 +54,7 @@ For normal conversations without image requests, just respond naturally with tex
 
   // streamText accepts messages directly in the format { role, content }
   const result = streamText({
-    model: groqClient("llama-3.3-70b-versatile"),
+    model: groqClient("groq/compound"),
     system: systemMessage,
     messages: messages.map((msg) => ({
       role: msg.role as "user" | "assistant",
