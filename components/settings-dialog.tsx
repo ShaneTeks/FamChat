@@ -1,6 +1,6 @@
 "use client"
 
-import { Settings, X, Plus, Trash2, Edit2, Save } from "lucide-react"
+import { Settings, X, Plus, Trash2, Edit2, Save, Music, CheckCircle2, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -19,8 +19,10 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { useSettings, TTSProvider, CartesiaMode, SystemInstructionPreset } from "@/contexts/settings-context"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/contexts/auth-context"
+import { supabase } from "@/lib/supabase"
 
 interface SettingsDialogProps {
   open: boolean
@@ -29,11 +31,62 @@ interface SettingsDialogProps {
 
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const { settings, updateSettings } = useSettings()
+  const { user } = useAuth()
   const { toast } = useToast()
   const [isEditingPreset, setIsEditingPreset] = useState(false)
   const [editingPresetName, setEditingPresetName] = useState('')
   const [isCreatingPreset, setIsCreatingPreset] = useState(false)
   const [newPresetName, setNewPresetName] = useState('')
+  const [spotifyConnected, setSpotifyConnected] = useState(false)
+  const [checkingSpotify, setCheckingSpotify] = useState(false)
+
+  useEffect(() => {
+    if (open && user) {
+      checkSpotifyConnection()
+    }
+  }, [open, user])
+
+  const checkSpotifyConnection = async () => {
+    if (!user) return
+    setCheckingSpotify(true)
+    try {
+      const { data, error } = await supabase
+        .from('spotify_tokens')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .single()
+      setSpotifyConnected(!error && !!data)
+    } catch (error) {
+      setSpotifyConnected(false)
+    } finally {
+      setCheckingSpotify(false)
+    }
+  }
+
+  const handleConnectSpotify = () => {
+    if (!user) {
+      toast({ title: "Please sign in first", variant: "destructive" })
+      return
+    }
+    // Pass user ID as query parameter so server can access it
+    window.location.href = `/api/spotify/login?user_id=${user.id}`
+  }
+
+  const handleDisconnectSpotify = async () => {
+    if (!user) return
+    try {
+      const { error } = await supabase
+        .from('spotify_tokens')
+        .delete()
+        .eq('user_id', user.id)
+      if (!error) {
+        setSpotifyConnected(false)
+        toast({ title: "Spotify disconnected" })
+      }
+    } catch (error) {
+      console.error('Error disconnecting Spotify:', error)
+    }
+  }
 
   const handleTTSChange = (value: string) => {
     updateSettings({ ttsProvider: value as TTSProvider })
@@ -277,6 +330,60 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                       ))}
                   </div>
                 </div>
+              )}
+            </div>
+          </div>
+
+          {/* Spotify Integration */}
+          <div className="border-t pt-4 mt-4">
+            <div className="grid gap-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Music className="w-4 h-4 text-green-500" />
+                  <label className="text-sm font-medium">Spotify Integration</label>
+                </div>
+                {!checkingSpotify && (
+                  <div className="flex items-center gap-1.5">
+                    {spotifyConnected ? (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span className="text-xs font-medium">Connected</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <XCircle className="w-3.5 h-3.5" />
+                        <span className="text-xs font-medium">Not connected</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <p className="text-xs text-muted-foreground">
+                {spotifyConnected 
+                  ? "Control music playback and access your Spotify devices"
+                  : "Connect Spotify to enable music playback control via AI"
+                }
+              </p>
+
+              {spotifyConnected ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDisconnectSpotify}
+                  className="w-full"
+                >
+                  Disconnect Spotify
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  onClick={handleConnectSpotify}
+                  className="w-full gap-2"
+                >
+                  <Music className="w-3.5 h-3.5" />
+                  Connect Spotify
+                </Button>
               )}
             </div>
           </div>

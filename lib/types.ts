@@ -21,6 +21,12 @@ export interface ForecastWidget {
   forecast: ForecastItem[]
 }
 
+export interface SpotifyWidget {
+  playlistId: string
+  theme?: '0' | '1'
+  title?: string
+}
+
 export interface Message {
   id: string
   role: "user" | "assistant"
@@ -32,6 +38,7 @@ export interface Message {
   isGeneratingImage?: boolean
   weatherWidget?: WeatherWidget
   forecastWidget?: ForecastWidget
+  spotifyWidget?: SpotifyWidget
 }
 
 export interface Chat {

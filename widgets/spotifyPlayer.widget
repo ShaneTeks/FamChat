@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "name": "spotifyPlayer",
+  "template": "{\"type\":\"Card\",\"size\":\"md\",\"padding\":0,\"radius\":\"xl\",\"children\":[{\"type\":\"Col\",\"gap\":0,\"children\":[{% if title %}{\"type\":\"Row\",\"padding\":12,\"background\":{{ (surface) | tojson }},\"borderBottom\":\"1px solid var(--color-border)\",\"children\":[{\"type\":\"Text\",\"value\":{{ (title) | tojson }},\"size\":\"sm\",\"weight\":\"semibold\"}]},{% endif %}{\"type\":\"Embed\",\"src\":{{ (embedUrl) | tojson }},\"height\":380,\"allow\":\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\"}]}]}",
+  "jsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "playlistId": {
+        "type": "string",
+        "description": "Spotify playlist ID"
+      },
+      "theme": {
+        "type": "string",
+        "enum": ["0", "1"],
+        "default": "0",
+        "description": "Theme: 0 for light, 1 for dark"
+      },
+      "title": {
+        "type": "string",
+        "description": "Optional title for the playlist"
+      },
+      "embedUrl": {
+        "type": "string",
+        "description": "Full Spotify embed URL"
+      },
+      "surface": {
+        "type": "string",
+        "description": "Background color for title area"
+      }
+    },
+    "required": [
+      "playlistId",
+      "embedUrl"
+    ],
+    "additionalProperties": false
+  },
+  "outputJsonPreview": {
+    "type": "Card",
+    "size": "md",
+    "padding": 0,
+    "radius": "xl",
+    "children": [
+      {
+        "type": "Col",
+        "gap": 0,
+        "children": [
+          {
+            "type": "Row",
+            "padding": 12,
+            "background": "var(--color-surface)",
+            "borderBottom": "1px solid var(--color-border)",
+            "children": [
+              {
+                "type": "Text",
+                "value": "My Favorite Playlist",
+                "size": "sm",
+                "weight": "semibold"
+              }
+            ]
+          },
+          {
+            "type": "Embed",
+            "src": "https://open.spotify.com/embed/playlist/3hWBzBUek4GeCjMQNAJKBp?utm_source=generator&theme=0",
+            "height": 380,
+            "allow": "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          }
+        ]
+      }
+    ]
+  },
+  "description": "Displays an embedded Spotify playlist player with optional title. Supports light and dark themes.",
+  "example": {
+    "playlistId": "3hWBzBUek4GeCjMQNAJKBp",
+    "theme": "0",
+    "title": "My Favorite Playlist",
+    "embedUrl": "https://open.spotify.com/embed/playlist/3hWBzBUek4GeCjMQNAJKBp?utm_source=generator&theme=0",
+    "surface": "var(--color-surface)"
+  }
+}

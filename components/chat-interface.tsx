@@ -9,6 +9,7 @@ import { SyncButton } from "@/components/sync-button"
 import { Menu, Sparkles } from "lucide-react"
 import { generateId } from "@/lib/utils"
 import { useSettings } from "@/contexts/settings-context"
+import { supabase } from "@/lib/supabase"
 
 interface ChatInterfaceProps {
   chat: Chat
@@ -134,9 +135,20 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
     }
 
     try {
+      // Get current session for auth
+      const { data: { session } } = await supabase.auth.getSession()
+      const headers: Record<string, string> = { 
+        "Content-Type": "application/json" 
+      }
+      
+      // Add auth header if user is logged in
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`
+      }
+      
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           messages: updatedMessages.map((msg) => ({
             role: msg.role,
@@ -163,6 +175,7 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
       let isImageRequest = false
       let isWeatherRequest = false
       let isForecastRequest = false
+      let isSpotifyRequest = false
 
       if (reader) {
         while (true) {
@@ -203,6 +216,9 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                         } else if (trimmed.includes('"forecast"')) {
                           isForecastRequest = true
                           continue
+                        } else if (trimmed.includes('"spotify"')) {
+                          isSpotifyRequest = true
+                          continue
                         }
                       }
                     } catch {
@@ -211,7 +227,7 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                   }
                   
                   // Only update if not a special request
-                  if (!isImageRequest && !isWeatherRequest && !isForecastRequest) {
+                  if (!isImageRequest && !isWeatherRequest && !isForecastRequest && !isSpotifyRequest) {
                     aiMessage.content = aiContent
                     onUpdateChat(chat.id, {
                       messages: [...updatedMessages, aiMessage],
@@ -254,6 +270,9 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                         } else if (trimmed.includes('"forecast"')) {
                           isForecastRequest = true
                           continue
+                        } else if (trimmed.includes('"spotify"')) {
+                          isSpotifyRequest = true
+                          continue
                         }
                       }
                     } catch {
@@ -262,7 +281,7 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                   }
                   
                   // Only update if not a special request
-                  if (!isImageRequest && !isWeatherRequest && !isForecastRequest) {
+                  if (!isImageRequest && !isWeatherRequest && !isForecastRequest && !isSpotifyRequest) {
                     aiMessage.content = aiContent
                     onUpdateChat(chat.id, {
                       messages: [...updatedMessages, aiMessage],
@@ -288,6 +307,9 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                         } else if (trimmed.includes('"forecast"')) {
                           isForecastRequest = true
                           continue
+                        } else if (trimmed.includes('"spotify"')) {
+                          isSpotifyRequest = true
+                          continue
                         }
                       }
                     } catch {
@@ -296,7 +318,7 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                   }
                   
                   // Only update if not a special request
-                  if (!isImageRequest && !isWeatherRequest && !isForecastRequest) {
+                  if (!isImageRequest && !isWeatherRequest && !isForecastRequest && !isSpotifyRequest) {
                     aiMessage.content = aiContent
                     onUpdateChat(chat.id, {
                       messages: [...updatedMessages, aiMessage],
@@ -310,6 +332,8 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
           }
         }
       }
+
+      // Note: Spotify connection is now handled through Settings page
 
       // After streaming completes, check if the AI requested a special action
       try {
@@ -437,27 +461,82 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
             onUpdateChat(chat.id, {
               messages: [...updatedMessages, aiMessage],
             })
+          } else if (jsonResponse.type === "spotify" && jsonResponse.playlistId) {
+            console.log("Detected Spotify widget request:", jsonResponse.playlistId)
+            
+            // Extract the text content without the JSON code block
+            let cleanContent = trimmedContent
+            
+            // Remove JSON code blocks
+            cleanContent = cleanContent.replace(/```(?:json)?\s*\n?\{[\s\S]*?\}\s*\n?```/g, '').trim()
+            
+            // Remove standalone JSON objects
+            const firstBrace = cleanContent.indexOf("{")
+            const lastBrace = cleanContent.lastIndexOf("}")
+            if (firstBrace !== -1 && lastBrace !== -1) {
+              // Check if this looks like a JSON object (has "type": "spotify")
+              const potentialJson = cleanContent.substring(firstBrace, lastBrace + 1)
+              if (potentialJson.includes('"type"') && potentialJson.includes('"spotify"')) {
+                cleanContent = cleanContent.substring(0, firstBrace).trim()
+              }
+            }
+            
+            // Use cleaned content or fallback to message from JSON
+            aiMessage.content = cleanContent || jsonResponse.message || "Here's the Spotify playlist:"
+            aiMessage.spotifyWidget = {
+              playlistId: jsonResponse.playlistId,
+              theme: jsonResponse.theme,
+              title: jsonResponse.title,
+            }
+            
+            onUpdateChat(chat.id, {
+              messages: [...updatedMessages, aiMessage],
+            })
           }
         }
       } catch (e) {
         // Not a JSON response or special request, just display the text
         console.log("Not a special request")
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error)
-      const errorMessage: Message = {
-        id: generateId(),
-        role: "assistant",
-        content: "Sorry, I encountered an error. Please try again.",
-        timestamp: Date.now(),
+      
+      // Check if error is from Spotify auth requirement
+      if (error?.message?.includes('SPOTIFY_NOT_CONNECTED') || 
+          error?.response?.error === 'SPOTIFY_NOT_CONNECTED') {
+        const errorMessage: Message = {
+          id: generateId(),
+          role: "assistant",
+          content: "To control Spotify playback, you need to connect your Spotify account first. Please open Settings (⚙️ gear icon in the sidebar) and click 'Connect Spotify' under Spotify Integration.",
+          timestamp: Date.now(),
+        }
+        onUpdateChat(chat.id, {
+          messages: [...updatedMessages, errorMessage],
+        })
+      } else {
+        const errorMessage: Message = {
+          id: generateId(),
+          role: "assistant",
+          content: "Sorry, I encountered an error. Please try again.",
+          timestamp: Date.now(),
+        }
+        onUpdateChat(chat.id, {
+          messages: [...updatedMessages, errorMessage],
+        })
       }
-      onUpdateChat(chat.id, {
-        messages: [...updatedMessages, errorMessage],
-      })
     } finally {
       setIsLoading(false)
     }
   }
+  
+  // Check for Spotify connection success on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('spotify_connected') === 'true') {
+      // Clear the URL parameter
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
 
   return (
     <div className="flex flex-col h-full">
