@@ -30,6 +30,8 @@ Individual messages within chats
 - `image_width` (INTEGER): Image width (optional)
 - `image_height` (INTEGER): Image height (optional)
 - `is_generating_image` (BOOLEAN): Image generation status
+- `weather_widget` (JSONB): Current weather widget data (optional)
+- `forecast_widget` (JSONB): 5-day forecast widget data (optional)
 
 ## Row Level Security (RLS)
 

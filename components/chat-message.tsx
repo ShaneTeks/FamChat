@@ -6,6 +6,8 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { ImagePreviewCard } from "@/components/image-preview-card"
 import { ImageLoading } from "@/components/image-loading"
+import { WeatherWidget } from "@/components/weather-widget"
+import { ForecastWidget } from "@/components/forecast-widget"
 import { Button } from "@/components/ui/button"
 import { Volume2, Copy } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
@@ -293,6 +295,16 @@ export function ChatMessage({ message }: ChatMessageProps) {
             {message.isGeneratingImage && (
               <div className="mt-4">
                 <ImageLoading />
+              </div>
+            )}
+            {message.weatherWidget && (
+              <div className="mt-4">
+                <WeatherWidget data={message.weatherWidget} />
+              </div>
+            )}
+            {message.forecastWidget && (
+              <div className="mt-4">
+                <ForecastWidget data={message.forecastWidget} />
               </div>
             )}
           </>

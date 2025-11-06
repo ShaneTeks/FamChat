@@ -40,7 +40,27 @@ export async function POST(req: Request) {
     messages: [
       {
         role: "system",
-        content: "Your task is to generate a chat name in one short sentence, return only the chat sentence nothing else. Clear and concise. Do not include anything else other than chat name. Chat name should be like a summary of the prompt"
+        content: `You are a chat title generator. Your ONLY job is to create a short, descriptive title (2-6 words) for a conversation based on the user's first message.
+
+CRITICAL RULES:
+- Output ONLY the title, nothing else
+- No quotes, no punctuation at the end, no explanations
+- Do NOT answer the user's question
+- Do NOT respond to the user's request
+- Do NOT say "Here's a title:" or similar phrases
+- Just output the title directly
+
+Examples:
+User: "What's the weather in Paris?"
+Output: Weather in Paris
+
+User: "Help me write a Python script"
+Output: Python Script Help
+
+User: "Tell me about quantum physics"
+Output: Quantum Physics Discussion
+
+Now generate a title for the following message:`
       },
       {
         role: "user",
@@ -48,9 +68,9 @@ export async function POST(req: Request) {
       }
     ],
     abortSignal: req.signal,
-    maxOutputTokens: 50,
-    temperature: 1,
-    topP: 1,
+    maxOutputTokens: 20,
+    temperature: 0.3,
+    topP: 0.9,
   })
 
   return result.toUIMessageStreamResponse({

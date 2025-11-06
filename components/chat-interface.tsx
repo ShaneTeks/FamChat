@@ -161,6 +161,8 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
       }
       
       let isImageRequest = false
+      let isWeatherRequest = false
+      let isForecastRequest = false
 
       if (reader) {
         while (true) {
@@ -186,23 +188,30 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                 if (data.type === "text-delta" && data.textDelta) {
                   aiContent += data.textDelta
                   
-                  // Check if this looks like an image request JSON
+                  // Check if this looks like a special request JSON
                   const trimmed = aiContent.trim()
                   if (trimmed.startsWith("{")) {
                     try {
-                      // Try to parse as JSON to detect image requests early
-                      if (trimmed.includes('"type"') && trimmed.includes('"image"')) {
-                        isImageRequest = true
-                        // Don't update the message content yet
-                        continue
+                      // Try to parse as JSON to detect special requests early
+                      if (trimmed.includes('"type"')) {
+                        if (trimmed.includes('"image"')) {
+                          isImageRequest = true
+                          continue
+                        } else if (trimmed.includes('"weather"')) {
+                          isWeatherRequest = true
+                          continue
+                        } else if (trimmed.includes('"forecast"')) {
+                          isForecastRequest = true
+                          continue
+                        }
                       }
                     } catch {
                       // Not valid JSON yet, continue normally
                     }
                   }
                   
-                  // Only update if not an image request
-                  if (!isImageRequest) {
+                  // Only update if not a special request
+                  if (!isImageRequest && !isWeatherRequest && !isForecastRequest) {
                     aiMessage.content = aiContent
                     onUpdateChat(chat.id, {
                       messages: [...updatedMessages, aiMessage],
@@ -230,23 +239,30 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                 if (data.type === "text-delta" && data.delta) {
                   aiContent += data.delta
                   
-                  // Check if this looks like an image request JSON
+                  // Check if this looks like a special request JSON
                   const trimmed = aiContent.trim()
                   if (trimmed.startsWith("{")) {
                     try {
-                      // Try to parse as JSON to detect image requests early
-                      if (trimmed.includes('"type"') && trimmed.includes('"image"')) {
-                        isImageRequest = true
-                        // Don't update the message content yet
-                        continue
+                      // Try to parse as JSON to detect special requests early
+                      if (trimmed.includes('"type"')) {
+                        if (trimmed.includes('"image"')) {
+                          isImageRequest = true
+                          continue
+                        } else if (trimmed.includes('"weather"')) {
+                          isWeatherRequest = true
+                          continue
+                        } else if (trimmed.includes('"forecast"')) {
+                          isForecastRequest = true
+                          continue
+                        }
                       }
                     } catch {
                       // Not valid JSON yet, continue normally
                     }
                   }
                   
-                  // Only update if not an image request
-                  if (!isImageRequest) {
+                  // Only update if not a special request
+                  if (!isImageRequest && !isWeatherRequest && !isForecastRequest) {
                     aiMessage.content = aiContent
                     onUpdateChat(chat.id, {
                       messages: [...updatedMessages, aiMessage],
@@ -257,23 +273,30 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                 else if (data.choices?.[0]?.delta?.content) {
                   aiContent += data.choices[0].delta.content
                   
-                  // Check if this looks like an image request JSON
+                  // Check if this looks like a special request JSON
                   const trimmed = aiContent.trim()
                   if (trimmed.startsWith("{")) {
                     try {
-                      // Try to parse as JSON to detect image requests early
-                      if (trimmed.includes('"type"') && trimmed.includes('"image"')) {
-                        isImageRequest = true
-                        // Don't update the message content yet
-                        continue
+                      // Try to parse as JSON to detect special requests early
+                      if (trimmed.includes('"type"')) {
+                        if (trimmed.includes('"image"')) {
+                          isImageRequest = true
+                          continue
+                        } else if (trimmed.includes('"weather"')) {
+                          isWeatherRequest = true
+                          continue
+                        } else if (trimmed.includes('"forecast"')) {
+                          isForecastRequest = true
+                          continue
+                        }
                       }
                     } catch {
                       // Not valid JSON yet, continue normally
                     }
                   }
                   
-                  // Only update if not an image request
-                  if (!isImageRequest) {
+                  // Only update if not a special request
+                  if (!isImageRequest && !isWeatherRequest && !isForecastRequest) {
                     aiMessage.content = aiContent
                     onUpdateChat(chat.id, {
                       messages: [...updatedMessages, aiMessage],
@@ -288,12 +311,41 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
         }
       }
 
-      // After streaming completes, check if the AI requested an image generation
+      // After streaming completes, check if the AI requested a special action
       try {
         const trimmedContent = aiContent.trim()
+        let jsonResponse = null
+        
+        // Try to extract JSON from content
+        // 1. Check if entire content is JSON
         if (trimmedContent.startsWith("{") && trimmedContent.endsWith("}")) {
-          const jsonResponse = JSON.parse(trimmedContent)
-          
+          try {
+            jsonResponse = JSON.parse(trimmedContent)
+          } catch {}
+        }
+        
+        // 2. Look for JSON in code blocks (```json ... ``` or ``` ... ```)
+        if (!jsonResponse) {
+          const codeBlockMatch = trimmedContent.match(/```(?:json)?\s*\n?(\{[\s\S]*?\})\s*\n?```/)
+          if (codeBlockMatch) {
+            try {
+              jsonResponse = JSON.parse(codeBlockMatch[1])
+            } catch {}
+          }
+        }
+        
+        // 3. Look for JSON anywhere in the content (between first { and last })
+        if (!jsonResponse) {
+          const firstBrace = trimmedContent.indexOf("{")
+          const lastBrace = trimmedContent.lastIndexOf("}")
+          if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+            try {
+              jsonResponse = JSON.parse(trimmedContent.substring(firstBrace, lastBrace + 1))
+            } catch {}
+          }
+        }
+        
+        if (jsonResponse) {
           if (jsonResponse.type === "image" && jsonResponse.prompt) {
             console.log("Detected image generation request:", jsonResponse.prompt)
             
@@ -331,11 +383,65 @@ export function ChatInterface({ chat, onUpdateChat, onToggleSidebar, sidebarOpen
                 messages: [...updatedMessages, aiMessage],
               })
             }
+          } else if (jsonResponse.type === "weather" && jsonResponse.weatherData) {
+            console.log("Detected weather widget request:", jsonResponse.weatherData)
+            
+            // Extract the text content without the JSON code block
+            let cleanContent = trimmedContent
+            
+            // Remove JSON code blocks
+            cleanContent = cleanContent.replace(/```(?:json)?\s*\n?\{[\s\S]*?\}\s*\n?```/g, '').trim()
+            
+            // Remove standalone JSON objects
+            const firstBrace = cleanContent.indexOf("{")
+            const lastBrace = cleanContent.lastIndexOf("}")
+            if (firstBrace !== -1 && lastBrace !== -1) {
+              // Check if this looks like a JSON object (has "type": "weather")
+              const potentialJson = cleanContent.substring(firstBrace, lastBrace + 1)
+              if (potentialJson.includes('"type"') && potentialJson.includes('"weather"')) {
+                cleanContent = cleanContent.substring(0, firstBrace).trim()
+              }
+            }
+            
+            // Use cleaned content or fallback to message from JSON
+            aiMessage.content = cleanContent || jsonResponse.message || "Here's the current weather:"
+            aiMessage.weatherWidget = jsonResponse.weatherData
+            
+            onUpdateChat(chat.id, {
+              messages: [...updatedMessages, aiMessage],
+            })
+          } else if (jsonResponse.type === "forecast" && jsonResponse.forecastData) {
+            console.log("Detected forecast widget request:", jsonResponse.forecastData)
+            
+            // Extract the text content without the JSON code block
+            let cleanContent = trimmedContent
+            
+            // Remove JSON code blocks
+            cleanContent = cleanContent.replace(/```(?:json)?\s*\n?\{[\s\S]*?\}\s*\n?```/g, '').trim()
+            
+            // Remove standalone JSON objects
+            const firstBrace = cleanContent.indexOf("{")
+            const lastBrace = cleanContent.lastIndexOf("}")
+            if (firstBrace !== -1 && lastBrace !== -1) {
+              // Check if this looks like a JSON object (has "type": "forecast")
+              const potentialJson = cleanContent.substring(firstBrace, lastBrace + 1)
+              if (potentialJson.includes('"type"') && potentialJson.includes('"forecast"')) {
+                cleanContent = cleanContent.substring(0, firstBrace).trim()
+              }
+            }
+            
+            // Use cleaned content or fallback to message from JSON
+            aiMessage.content = cleanContent || jsonResponse.message || "Here's the 5-day forecast:"
+            aiMessage.forecastWidget = jsonResponse.forecastData
+            
+            onUpdateChat(chat.id, {
+              messages: [...updatedMessages, aiMessage],
+            })
           }
         }
       } catch (e) {
-        // Not a JSON response or image request, just display the text
-        console.log("Not an image generation request")
+        // Not a JSON response or special request, just display the text
+        console.log("Not a special request")
       }
     } catch (error) {
       console.error("Error:", error)

@@ -45,6 +45,8 @@ export class SyncService {
           image_width: msg.imageWidth,
           image_height: msg.imageHeight,
           is_generating_image: msg.isGeneratingImage || false,
+          weather_widget: msg.weatherWidget ? JSON.stringify(msg.weatherWidget) : null,
+          forecast_widget: msg.forecastWidget ? JSON.stringify(msg.forecastWidget) : null,
         }))
 
         const { error: messagesError } = await supabase
@@ -111,6 +113,8 @@ export class SyncService {
           imageWidth: msg.image_width,
           imageHeight: msg.image_height,
           isGeneratingImage: msg.is_generating_image,
+          weatherWidget: msg.weather_widget ? JSON.parse(msg.weather_widget) : undefined,
+          forecastWidget: msg.forecast_widget ? JSON.parse(msg.forecast_widget) : undefined,
         })
       })
 

@@ -135,7 +135,7 @@ ON CONFLICT (id) DO UPDATE SET
 DELETE FROM public.messages WHERE chat_id = $1;
 
 -- Insert messages
-INSERT INTO public.messages (id, chat_id, role, content, timestamp, image_url, image_width, image_height, is_generating_image)
+INSERT INTO public.messages (id, chat_id, role, content, timestamp, image_url, image_width, image_height, is_generating_image, weather_widget, forecast_widget)
 VALUES ...;
 ```
 
